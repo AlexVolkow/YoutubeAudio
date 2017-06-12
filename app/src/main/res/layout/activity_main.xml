@@ -29,5 +29,6 @@
             android:ems="10"
             android:id="@+id/editText_URL"
             android:layout_width="wrap_content" android:layout_above="@+id/button_download"
-            android:layout_toEndOf="@+id/textView_URL" android:layout_marginStart="43dp"/>
+            android:layout_toEndOf="@+id/textView_URL" android:layout_marginStart="43dp"
+            android:text="https://www.youtube.com/watch?v=fOJu-fgvhgg"/>
 </RelativeLayout>
