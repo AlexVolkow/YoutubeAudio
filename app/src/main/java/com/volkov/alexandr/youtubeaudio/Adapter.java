@@ -1,5 +1,6 @@
 package com.volkov.alexandr.youtubeaudio;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,17 +27,15 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.volkov.alexandr.youtubeaudio.downloader.Audio;
-import com.volkov.alexandr.youtubeaudio.downloader.AudioLink;
+import com.volkov.alexandr.youtubeaudio.downloader.AudioDownloader;
+import com.volkov.alexandr.youtubeaudio.downloader.FailedDownloadException;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-
-import static java.security.AccessController.getContext;
 
 /**
  * Created by AlexandrVolkov on 14.06.2017.
@@ -53,14 +52,16 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
     public static class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title;
         TextView text;
-        Button download;
+        TextView params;
+        ImageButton download;
         ImageButton play;
 
         public Holder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.textView_title);
             text = (TextView) itemView.findViewById(R.id.textView_text);
-            download = (Button) itemView.findViewById(R.id.button_download);
+            params = (TextView) itemView.findViewById(R.id.textView_params);
+            download = (ImageButton) itemView.findViewById(R.id.button_download);
             play = (ImageButton) itemView.findViewById(R.id.button_play);
             itemView.setOnClickListener(this);
         }
@@ -106,32 +107,33 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
     @Override
     public void onBindViewHolder(Holder holder, final int position) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.ENGLISH);
+        DecimalFormat decimalFormat = new DecimalFormat("#0.0");
         final Audio audio = dataSet.get(position);
         holder.title.setText(df.format(audio.getDate()));
         holder.text.setText(audio.getTitle());
+        String params = String.valueOf((int) (audio.getLength() / 60)) + " min/" + decimalFormat.format(audio.getSize()) + " Mb";
+        holder.params.setText(params);
         holder.download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AudioLink max = Collections.max(audio.getQualitys());
-                AudioLink min = Collections.min(audio.getQualitys());
-
-                Intent downloadParams = new Intent();
-                downloadParams.setClass(context, DownloadParams.class);
-                downloadParams.putExtra("max", max);
-                downloadParams.putExtra("min", min);
-                context.startActivity(downloadParams);
+                DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                AudioDownloader downloader = new AudioDownloader(audio.getUrl(), dm);
+                try {
+                    downloader.download(audio.getTitle());
+                } catch (IOException | FailedDownloadException e) {
+                    e.printStackTrace();
+                }
             }
         });
         holder.play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AudioLink min = audio.getQualitys().get(0);
                 DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
-                        Util.getUserAgent(context, "yourApplicationName"), bandwidthMeter);
+                        Util.getUserAgent(context, "YoutubeAudio"), bandwidthMeter);
 
                 ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
 
-                MediaSource videoSource = new ExtractorMediaSource(Uri.parse(min.getUrl()),
+                MediaSource videoSource = new ExtractorMediaSource(Uri.parse(audio.getUrl()),
                         dataSourceFactory, extractorsFactory, null, null);
 
                 player.prepare(videoSource);

@@ -22,7 +22,7 @@ public class PageDownloader extends AsyncTask<URL, Void, String> {
         URL url = params[0];
         StringBuilder html = new StringBuilder();
         try {
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             try {
                 connection.setDoOutput(true);
                 connection.setRequestMethod("GET");

@@ -5,18 +5,20 @@ import android.net.Uri;
 import android.os.Environment;
 
 import java.io.*;
+import java.net.URL;
 
 /**
  * Created by AlexandrVolkov on 09.06.2017.
  */
 public class AudioDownloader {
     private static final String DIR = "/YouTubeAudio_downloads";
+    private static final String TYPE = "mp3";
     private static final String BASE_DIR = Environment.getExternalStorageDirectory() + DIR;
-    private AudioLink url;
+    private Uri url;
     private DownloadManager downloadManager;
 
-    public AudioDownloader(AudioLink url, DownloadManager downloadManager) {
-        this.url = url;
+    public AudioDownloader(String url, DownloadManager downloadManager) {
+        this.url = Uri.parse(url);
         this.downloadManager = downloadManager;
         File direct = new File(BASE_DIR);
         if (!direct.exists()) {
@@ -25,10 +27,9 @@ public class AudioDownloader {
     }
 
     public void download(String fname) throws IOException, FailedDownloadException {
-        Uri downloadLink = Uri.parse(url.getUrl());
-        String filename = fname + "." + url.getType();
+        String filename = fname + "." + TYPE;
 
-        DownloadManager.Request request = new DownloadManager.Request(downloadLink);
+        DownloadManager.Request request = new DownloadManager.Request(url);
         request.setTitle(fname + " download");
         request.setDescription("File is being downloaded...");
         request.allowScanningByMediaScanner();

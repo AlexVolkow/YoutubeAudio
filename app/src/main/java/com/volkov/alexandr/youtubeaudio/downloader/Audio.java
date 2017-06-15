@@ -10,13 +10,15 @@ public class Audio {
     private String title;
     private Date date;
     private long length;
-    private List<AudioLink> qualitys;
+    private double size;
+    private String url;
 
-    public Audio(String title, Date date, long length, List<AudioLink> qualitys) {
+    public Audio(String title, Date date, long length, double size, String url) {
         this.title = title;
         this.date = date;
         this.length = length;
-        this.qualitys = qualitys;
+        this.size = size;
+        this.url = url;
     }
 
     public String getTitle() {
@@ -31,7 +33,11 @@ public class Audio {
         return length;
     }
 
-    public List<AudioLink> getQualitys() {
-        return qualitys;
+    public double getSize() {
+        return size;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

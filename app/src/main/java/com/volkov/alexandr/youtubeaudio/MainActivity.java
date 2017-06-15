@@ -1,13 +1,7 @@
 package com.volkov.alexandr.youtubeaudio;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,32 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.*;
-import com.google.android.exoplayer2.util.Util;
 import com.volkov.alexandr.youtubeaudio.downloader.*;
+import org.json.JSONException;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView listAudio;
@@ -76,16 +48,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_add:
-                List<AudioLink> links;
                 try {
-                    links = getAudioLinksFromUrl("https://www.youtube.com/watch?v=fOJu-fgvhgg");
-                    if (links.isEmpty()) {
-                        showAlert("Failed to download audio from this video");
-                        return false;
-                    }
-                    Audio audio = new Audio("Some video", new Date(), 240, links);
+                    Audio audio = PageParser.getAudio("https://www.youtube.com/watch?v=HO6ebtWczX8");
                     adapter.addItem(audio);
-                } catch (MalformedURLException | FailedDownloadException e) {
+                } catch (JSONException e) {
+                    showAlert("Failed to parse page on this url");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    showAlert("Failed to download page on this url");
                     e.printStackTrace();
                 }
                 return true;
@@ -93,21 +63,6 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private List<AudioLink> getAudioLinksFromUrl(String link) throws MalformedURLException, FailedDownloadException {
-        URL url = new URL(link);
-
-        PageDownloader pageDownloader = new PageDownloader();
-
-        String html;
-        try {
-            html = pageDownloader.downloadPage(url);
-        }catch (InterruptedException| ExecutionException e) {
-            showAlert("Failed to download page on this url");
-            throw new FailedDownloadException(url);
-        }
-        return PageParser.getAudioLinks(html);
     }
 
     public void showAlert(String msg) {
