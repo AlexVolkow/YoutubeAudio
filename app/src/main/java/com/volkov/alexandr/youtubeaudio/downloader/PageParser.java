@@ -38,13 +38,12 @@ public class PageParser {
                         String type = extractTag(url, "mime");
                         String typeContent = type.split("%2F")[0];
                         String typeFile = type.split("%2F")[1];
-                        String itag = extractTag(url, "itag");
                         if (typeContent.equals("audio")) {
                             SizeOfAudioFile audioSize = new SizeOfAudioFile();
                             try {
                                 audioSize.execute(new URL(url));
                                 double size = audioSize.get();
-                                audio.add(new AudioLink(url, typeFile, itag, size));
+                                audio.add(new AudioLink(url, typeFile, size));
                             } catch (InterruptedException | ExecutionException | MalformedURLException e) {
                                 e.printStackTrace();
                                 Log.e("IOException", "Failed to download page on url = " + url);

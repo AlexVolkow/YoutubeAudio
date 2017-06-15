@@ -9,4 +9,7 @@ public class FailedDownloadException extends Exception {
     public FailedDownloadException(URL url, Throwable cause) {
         super("Failed to download page on url = " + url.toString(), cause);
     }
+    public FailedDownloadException(URL url) {
+        super("Failed to download page on url = " + url.toString());
+    }
 }
