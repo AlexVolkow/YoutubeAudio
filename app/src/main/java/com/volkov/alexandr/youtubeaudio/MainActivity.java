@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Audio audio = PageParser.getAudio("https://www.youtube.com/watch?v=HO6ebtWczX8");
                     adapter.addItem(audio);
+
+                    audio = PageParser.getAudio("https://www.youtube.com/watch?v=lBztnahrOFw");
+                    adapter.addItem(audio);
                 } catch (JSONException e) {
                     showAlert("Failed to parse page on this url");
                     e.printStackTrace();

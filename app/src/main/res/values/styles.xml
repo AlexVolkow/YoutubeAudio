@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/cardview_light_background</item>
+        <item name="android:textColorSecondary">@color/cardview_dark_background </item>
+        <item name="android:textColor">@color/cardview_light_background</item>
+    </style>
+
 </resources>

@@ -1,5 +1,7 @@
 package com.volkov.alexandr.youtubeaudio.downloader;
 
+import android.net.Uri;
+import android.net.UrlQuerySanitizer;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +28,12 @@ public class PageParser {
 
         String page = pg.downloadPage(url);
 
+        Uri uri = Uri.parse(yotubeLink);
+        String id = uri.getQueryParameter("v");
+        if (id == null) {
+            id = uri.getPathSegments().get(0);
+        }
+
         JSONObject jsonObject = new JSONObject(page);
         String title = jsonObject.getString("title");
         long length = Long.parseLong(jsonObject.getString("length"));
@@ -33,6 +41,6 @@ public class PageParser {
 
         sizeOfAudioFile.execute(new URL(link));
         double size = sizeOfAudioFile.get();
-        return new Audio(title, new Date(), length, size, link);
+        return new Audio(id, title, new Date(), length, size, link);
     }
 }
