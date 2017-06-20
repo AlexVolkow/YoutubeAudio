@@ -2,53 +2,38 @@ package com.volkov.alexandr.youtubeaudio;
 
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
-import com.volkov.alexandr.youtubeaudio.downloader.Audio;
+import com.volkov.alexandr.youtubeaudio.player.Audio;
 import com.volkov.alexandr.youtubeaudio.downloader.AudioDownloader;
 import com.volkov.alexandr.youtubeaudio.downloader.FailedDownloadException;
+import com.volkov.alexandr.youtubeaudio.player.MusicPlayer;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Created by AlexandrVolkov on 14.06.2017.
  */
 public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
-    private static DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-    private SimpleExoPlayer player;
-    private SimpleExoPlayerView simpleExoPlayerView;
-    private static DataSource.Factory dataSourceFactory;
-    private static ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+    private static final String SET_ONLY_PLAY_IMG = "SET_ONLY_PLAY_IMG";
+
+    private MusicPlayer player;
+    private static String lastSongUrl;
+    private static int mCurrentPlayingPosition = -1;
 
     private static Drawable pauseImg;
     private static Drawable playImg;
@@ -80,28 +65,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         }
     }
 
-    public Adapter(List<Audio> myDataset, Context context) {
+    public Adapter(List<Audio> myDataset, Context context, SimpleExoPlayerView playerView) {
         this.dataSet = myDataset;
         this.context = context;
 
+        player = new MusicPlayer(context, playerView);
         pauseImg = context.getResources().getDrawable(R.drawable.exo_controls_pause);
         playImg = context.getResources().getDrawable(R.drawable.exo_controls_play);
-
-        simpleExoPlayerView = new SimpleExoPlayerView(context);
-        TrackSelection.Factory audioTrackSelectionFactory =
-                new AdaptiveTrackSelection.Factory(bandwidthMeter);
-        TrackSelector trackSelector =
-                new DefaultTrackSelector(audioTrackSelectionFactory);
-        player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
-
-        simpleExoPlayerView.setUseController(true);
-        simpleExoPlayerView.requestFocus();
-
-        simpleExoPlayerView.setPlayer(player);
-
-        dataSourceFactory= new DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, "YoutubeAudio"), bandwidthMeter);
-
     }
 
     @Override
@@ -115,7 +85,25 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
     }
 
     @Override
-    public void onBindViewHolder(Holder holder, final int position) {
+    public void onBindViewHolder(Holder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            if (payloads.get(0) instanceof String) {
+                String temp = (String) payloads.get(0);
+                if (temp.equals(SET_ONLY_PLAY_IMG)) {
+                    if (mCurrentPlayingPosition == holder.getAdapterPosition()) {
+                        holder.play.setBackground(pauseImg);
+                    } else {
+                        holder.play.setBackground(playImg);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(final Holder holder, final int position) {
         final Audio audio = dataSet.get(position);
         holder.title.setText(df.format(audio.getDate()));
         holder.text.setText(audio.getTitle());
@@ -136,7 +124,28 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
                 }
             }
         });
-        holder.play.setOnClickListener(new PlayOnClickListener(audio.getUrl(), player));
+        holder.play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int prevPosition = mCurrentPlayingPosition;
+                if (lastSongUrl == null || !lastSongUrl.equals(audio.getUrl())) {
+                    player.playFromURL(audio.getUrl());
+                    v.setBackground(pauseImg);
+                    mCurrentPlayingPosition = holder.getAdapterPosition();
+                    lastSongUrl = audio.getUrl();
+                } else if (player.isPlaying()) {
+                    v.setBackground(playImg);
+                    player.pause();
+                    mCurrentPlayingPosition = -1;
+                } else {
+                    v.setBackground(pauseImg);
+                    player.play();
+                }
+                if (prevPosition != -1 && prevPosition != mCurrentPlayingPosition) {
+                    notifyItemChanged(prevPosition, SET_ONLY_PLAY_IMG);
+                }
+            }
+        });
     }
 
 
@@ -158,35 +167,5 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
     @Override
     public int getItemCount() {
         return dataSet.size();
-    }
-
-    public static class PlayOnClickListener implements View.OnClickListener {
-        private boolean isFirstTime = true;
-        private String url;
-        private SimpleExoPlayer player;
-
-        public PlayOnClickListener(String url, SimpleExoPlayer player) {
-            this.url = url;
-            this.player = player;
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (isFirstTime) {
-                MediaSource audioSource = new ExtractorMediaSource(Uri.parse(url),
-                        dataSourceFactory, extractorsFactory, null, null);
-
-                player.prepare(audioSource);
-                player.setPlayWhenReady(true);
-                isFirstTime = false;
-            } else {
-                player.setPlayWhenReady(!player.getPlayWhenReady());
-            }
-            if (player.getPlayWhenReady()) {
-                v.setBackground(pauseImg);
-            } else {
-                v.setBackground(playImg);
-            }
-        }
     }
 }

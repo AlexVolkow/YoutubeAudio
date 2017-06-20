@@ -1,16 +1,13 @@
 package com.volkov.alexandr.youtubeaudio.downloader;
 
 import android.net.Uri;
-import android.net.UrlQuerySanitizer;
-import android.util.Log;
-import org.json.JSONArray;
+import android.widget.Toast;
+import com.volkov.alexandr.youtubeaudio.player.Audio;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -44,7 +41,7 @@ public class PageParser {
         for (int i = 0; i < DELAY; i++) {
             sizeOfAudioFile.execute(new URL(link));
             Double temp = sizeOfAudioFile.get();
-            if (temp != null) {
+            if (Math.abs(temp) > 0.0001) {
                 size = temp;
                 break;
             }

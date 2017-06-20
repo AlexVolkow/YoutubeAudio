@@ -2,7 +2,6 @@ package com.volkov.alexandr.youtubeaudio;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.volkov.alexandr.youtubeaudio.downloader.*;
+import com.volkov.alexandr.youtubeaudio.player.Audio;
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -29,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
         listAudio.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         listAudio.setLayoutManager(layoutManager);
-        adapter = new Adapter(new ArrayList<Audio>(), this);
+        adapter = new Adapter(new ArrayList<Audio>(), this,
+                (SimpleExoPlayerView) findViewById(R.id.player_view));
         listAudio.setAdapter(adapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -50,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_add:
                 try {
-                    Audio audio = PageParser.getAudio("https://www.youtube.com/watch?v=HO6ebtWczX8");
+                    Audio audio = PageParser.getAudio("https://www.youtube.com/watch?v=OPf0YbXqDm0");
                     adapter.addItem(audio);
 
-                    audio = PageParser.getAudio("https://www.youtube.com/watch?v=lBztnahrOFw");
+                    audio = PageParser.getAudio("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
                     adapter.addItem(audio);
                 } catch (JSONException e) {
                     showAlert("Failed to parse page on this url");
