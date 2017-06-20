@@ -3,6 +3,7 @@ package com.volkov.alexandr.youtubeaudio;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -43,20 +44,22 @@ import java.util.Locale;
  * Created by AlexandrVolkov on 14.06.2017.
  */
 public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
-    private DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+    private static DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
     private SimpleExoPlayer player;
     private SimpleExoPlayerView simpleExoPlayerView;
-    private DataSource.Factory dataSourceFactory;
-    private ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+    private static DataSource.Factory dataSourceFactory;
+    private static ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+
+    private static Drawable pauseImg;
+    private static Drawable playImg;
 
     private static final DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.ENGLISH);
     private static final DecimalFormat decimalFormat = new DecimalFormat("#0.0");
 
     private List<Audio> dataSet;
-    private static ClickListener clickListener;
     private Context context;
 
-    public static class Holder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class Holder extends RecyclerView.ViewHolder {
         TextView title;
         TextView text;
         TextView length;
@@ -74,23 +77,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
             download = (ImageButton) itemView.findViewById(R.id.button_download);
             play = (ImageButton) itemView.findViewById(R.id.button_play);
             cover = (ImageView) itemView.findViewById(R.id.item_cover);
-            itemView.setOnClickListener(this);
         }
-
-
-        @Override
-        public void onClick(View v) {
-            clickListener.onItemClick(getAdapterPosition(), v);
-        }
-    }
-
-    public void setOnItemClickListener(ClickListener myClickListener) {
-        this.clickListener = myClickListener;
     }
 
     public Adapter(List<Audio> myDataset, Context context) {
         this.dataSet = myDataset;
         this.context = context;
+
+        pauseImg = context.getResources().getDrawable(R.drawable.exo_controls_pause);
+        playImg = context.getResources().getDrawable(R.drawable.exo_controls_play);
 
         simpleExoPlayerView = new SimpleExoPlayerView(context);
         TrackSelection.Factory audioTrackSelectionFactory =
@@ -128,7 +123,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
                 into(holder.cover);
         String length = String.valueOf((int) (audio.getLength() / 60)) + " min";
         holder.length.setText(length);
-        holder.size.setText(decimalFormat.format(audio.getSize()) + " Mb");
+        holder.size.setText(String.format("%s Mb", decimalFormat.format(audio.getSize())));
         holder.download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,16 +136,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
                 }
             }
         });
-        holder.play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MediaSource videoSource = new ExtractorMediaSource(Uri.parse(audio.getUrl()),
-                        dataSourceFactory, extractorsFactory, null, null);
-
-                player.prepare(videoSource);
-                player.setPlayWhenReady(true);
-            }
-        });
+        holder.play.setOnClickListener(new PlayOnClickListener(audio.getUrl(), player));
     }
 
 
@@ -174,7 +160,33 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         return dataSet.size();
     }
 
-    public interface ClickListener {
-        void onItemClick(int position, View v);
+    public static class PlayOnClickListener implements View.OnClickListener {
+        private boolean isFirstTime = true;
+        private String url;
+        private SimpleExoPlayer player;
+
+        public PlayOnClickListener(String url, SimpleExoPlayer player) {
+            this.url = url;
+            this.player = player;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (isFirstTime) {
+                MediaSource audioSource = new ExtractorMediaSource(Uri.parse(url),
+                        dataSourceFactory, extractorsFactory, null, null);
+
+                player.prepare(audioSource);
+                player.setPlayWhenReady(true);
+                isFirstTime = false;
+            } else {
+                player.setPlayWhenReady(!player.getPlayWhenReady());
+            }
+            if (player.getPlayWhenReady()) {
+                v.setBackground(pauseImg);
+            } else {
+                v.setBackground(playImg);
+            }
+        }
     }
 }

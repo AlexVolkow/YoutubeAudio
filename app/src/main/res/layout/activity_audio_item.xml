@@ -53,7 +53,7 @@
                         android:layout_height="match_parent"
                         android:id="@+id/button_play"
                         android:layout_alignParentBottom="true" android:layout_alignParentStart="true"
-                        android:background="@android:drawable/ic_media_play"
+                        android:background="@drawable/exo_controls_play"
                         android:backgroundTint="@android:color/darker_gray"
                         android:layout_weight="0.16" android:onClick="startMusic" android:foregroundGravity="left"
                         android:layout_width="30dp"/>

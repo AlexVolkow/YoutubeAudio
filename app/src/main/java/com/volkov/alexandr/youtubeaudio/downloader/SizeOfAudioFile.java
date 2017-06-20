@@ -21,6 +21,6 @@ public class SizeOfAudioFile extends AsyncTask<URL, Void, Double> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return 0.0;
+        return null;
     }
 }

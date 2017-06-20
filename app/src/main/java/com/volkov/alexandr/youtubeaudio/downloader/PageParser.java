@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class PageParser {
     private static final String HOST = "http://www.youtubeinmp3.com/fetch/?format=JSON&video=";
+    private static final int DELAY = 10;
 
     public static Audio getAudio(String yotubeLink) throws MalformedURLException, ExecutionException, InterruptedException, JSONException {
         URL url = new URL(HOST + yotubeLink);
@@ -39,8 +40,15 @@ public class PageParser {
         long length = Long.parseLong(jsonObject.getString("length"));
         String link = jsonObject.getString("link");
 
-        sizeOfAudioFile.execute(new URL(link));
-        double size = sizeOfAudioFile.get();
+        double size = 0;
+        for (int i = 0; i < DELAY; i++) {
+            sizeOfAudioFile.execute(new URL(link));
+            Double temp = sizeOfAudioFile.get();
+            if (temp != null) {
+                size = temp;
+                break;
+            }
+        }
         return new Audio(id, title, new Date(), length, size, link);
     }
 }
