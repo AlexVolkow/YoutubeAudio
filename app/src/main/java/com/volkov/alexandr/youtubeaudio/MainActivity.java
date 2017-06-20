@@ -34,10 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
-
-        Intent intent = new Intent( getApplicationContext(), ExoPlayerService.class );
-        intent.setAction( ExoPlayerService.ACTION_PLAY );
-        startService( intent );
     }
 
     @Override
