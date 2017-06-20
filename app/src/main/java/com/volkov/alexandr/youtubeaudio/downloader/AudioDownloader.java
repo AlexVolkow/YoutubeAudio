@@ -17,7 +17,7 @@ public class AudioDownloader {
     private Uri url;
     private DownloadManager downloadManager;
 
-    public AudioDownloader(String url, DownloadManager downloadManager) {
+    public AudioDownloader(DownloadManager downloadManager, String url) {
         this.url = Uri.parse(url);
         this.downloadManager = downloadManager;
         File direct = new File(BASE_DIR);

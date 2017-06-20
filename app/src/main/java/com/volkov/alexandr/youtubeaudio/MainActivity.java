@@ -2,6 +2,7 @@ package com.volkov.alexandr.youtubeaudio;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,8 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int GET_YOUTUBE_URL = 1;
+
     private RecyclerView listAudio;
     private Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         listAudio.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         listAudio.setLayoutManager(layoutManager);
-        adapter = new Adapter(new ArrayList<Audio>(), this,
+        adapter = new Adapter(this, new ArrayList<Audio>(),
                 (SimpleExoPlayerView) findViewById(R.id.player_view));
         listAudio.setAdapter(adapter);
 
@@ -52,11 +55,23 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_add:
-                try {
-                    Audio audio = PageParser.getAudio("https://www.youtube.com/watch?v=OPf0YbXqDm0");
-                    adapter.addItem(audio);
+                Intent intent = new Intent();
+                intent.setClass(this, YoutubeLinkActivity.class);
+                startActivityForResult(intent, GET_YOUTUBE_URL);
+                return true;
 
-                    audio = PageParser.getAudio("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GET_YOUTUBE_URL) {
+            if (resultCode == RESULT_OK) {
+                String url = data.getStringExtra("url");
+                try {
+                    Audio audio = PageParser.getAudio(url);
                     adapter.addItem(audio);
                 } catch (JSONException e) {
                     showAlert("Failed to parse page on this url");
@@ -65,10 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     showAlert("Failed to download page on this url");
                     e.printStackTrace();
                 }
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+            }
         }
     }
 

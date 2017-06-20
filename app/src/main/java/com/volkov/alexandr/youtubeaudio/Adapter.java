@@ -65,7 +65,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         }
     }
 
-    public Adapter(List<Audio> myDataset, Context context, SimpleExoPlayerView playerView) {
+    public Adapter(Context context, List<Audio> myDataset, SimpleExoPlayerView playerView) {
         this.dataSet = myDataset;
         this.context = context;
 
@@ -107,7 +107,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         final Audio audio = dataSet.get(position);
         holder.title.setText(df.format(audio.getDate()));
         holder.text.setText(audio.getTitle());
-        Picasso.with(context).load("https://img.youtube.com/vi/"+ audio.getId() + "/0.jpg").
+        Picasso.with(context).load("https://img.youtube.com/vi/" + audio.getId() + "/0.jpg").
                 into(holder.cover);
         String length = String.valueOf((int) (audio.getLength() / 60)) + " min";
         holder.length.setText(length);
@@ -116,7 +116,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
             @Override
             public void onClick(View v) {
                 DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                AudioDownloader downloader = new AudioDownloader(audio.getUrl(), dm);
+                AudioDownloader downloader = new AudioDownloader(dm, audio.getUrl());
                 try {
                     downloader.download(audio.getTitle());
                 } catch (IOException | FailedDownloadException e) {

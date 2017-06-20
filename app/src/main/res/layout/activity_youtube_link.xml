@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/activity_download_params"
+        android:orientation="vertical"
+        android:padding="10dip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    <TextView
+            android:text="Enter Yotube link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/textView_link" android:textSize="18sp"
+            android:textAlignment="viewStart" android:paddingLeft="10dp"/>
+    <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/editText_url" android:selectAllOnFocus="false"
+            android:text="https://www.youtube.com/watch?v=OPf0YbXqDm0"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center">
+        <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="Cancel"
+                android:layout_gravity="left"
+                android:textColor="#00b0e4" android:id="@+id/button_cancel" android:onClick="close"/>
+
+        <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="Add"
+                android:layout_gravity="right"
+                android:textColor="#00b0e4" android:id="@+id/button_add" android:onClick="add"/>
+    </LinearLayout>
+
+</LinearLayout>
