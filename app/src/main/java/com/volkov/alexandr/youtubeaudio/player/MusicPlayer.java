@@ -1,8 +1,6 @@
 package com.volkov.alexandr.youtubeaudio.player;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -19,7 +17,6 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.volkov.alexandr.youtubeaudio.R;
 
 /**
  * Created by AlexandrVolkov on 20.06.2017.
@@ -30,11 +27,8 @@ public class MusicPlayer {
     private static DataSource.Factory dataSourceFactory;
     private static ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
 
-    private Context context;
 
     public MusicPlayer(Context context, SimpleExoPlayerView playerView) {
-        this.context = context;
-
         TrackSelection.Factory audioTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(bandwidthMeter);
         TrackSelector trackSelector =

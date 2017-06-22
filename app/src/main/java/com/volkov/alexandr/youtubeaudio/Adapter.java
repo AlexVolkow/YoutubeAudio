@@ -20,10 +20,8 @@ import com.volkov.alexandr.youtubeaudio.player.MusicPlayer;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Created by AlexandrVolkov on 14.06.2017.

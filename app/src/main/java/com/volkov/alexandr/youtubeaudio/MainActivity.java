@@ -1,38 +1,37 @@
 package com.volkov.alexandr.youtubeaudio;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.volkov.alexandr.youtubeaudio.downloader.*;
 import com.volkov.alexandr.youtubeaudio.player.Audio;
-import org.json.JSONException;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final int GET_YOUTUBE_URL = 1;
 
-    private RecyclerView listAudio;
     private Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        listAudio = (RecyclerView) findViewById(R.id.list_audio);
+        RecyclerView listAudio = (RecyclerView) findViewById(R.id.list_audio);
         listAudio.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         listAudio.setLayoutManager(layoutManager);
         adapter = new Adapter(this, new ArrayList<Audio>(),
                 (SimpleExoPlayerView) findViewById(R.id.player_view));
@@ -70,17 +69,19 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == GET_YOUTUBE_URL) {
             if (resultCode == RESULT_OK) {
                 String url = data.getStringExtra("url");
-                try {
-                    Audio audio = PageParser.getAudio(url);
-                    adapter.addItem(audio);
-                } catch (JSONException e) {
-                    showAlert("Failed to parse page on this url");
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    showAlert("Failed to download page on this url");
-                    e.printStackTrace();
-                }
+                addAudio(url);
             }
+        }
+    }
+
+    private void addAudio(String url) {
+        try {
+            PageParserTask pageParser = new PageParserTask(this);
+            pageParser.execute(url);
+        } catch (Exception e) {
+            Log.e("FailedDownloading", "Failed to download page on this url " + url);
+            showAlert("Failed to download page on this url " + url);
+            e.printStackTrace();
         }
     }
 
@@ -97,5 +98,38 @@ public class MainActivity extends AppCompatActivity {
                         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    private class PageParserTask extends AsyncTask<String, Void, Audio> {
+        private ProgressDialog pd;
+
+        public PageParserTask(Context context) {
+            pd = new ProgressDialog(context);
+            pd.setMessage("Page downloading...");
+            pd.setCancelable(false);
+        }
+
+        @Override
+        protected Audio doInBackground(String... params) {
+            try {
+                return PageParser.getAudio(params[0]);
+            } catch (FailedDownloadException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd.show();
+        }
+
+        @Override
+        protected void onPostExecute(Audio audio) {
+            super.onPostExecute(audio);
+            pd.hide();
+            adapter.addItem(audio);
+        }
     }
 }

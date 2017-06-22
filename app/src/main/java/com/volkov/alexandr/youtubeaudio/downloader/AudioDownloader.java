@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Environment;
 
 import java.io.*;
-import java.net.URL;
 
 /**
  * Created by AlexandrVolkov on 09.06.2017.

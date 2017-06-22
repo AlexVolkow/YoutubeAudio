@@ -1,7 +1,6 @@
 package com.volkov.alexandr.youtubeaudio.player;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by AlexandrVolkov on 15.06.2017.
