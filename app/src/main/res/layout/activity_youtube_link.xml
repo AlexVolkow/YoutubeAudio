@@ -18,7 +18,7 @@
             android:inputType="textPersonName"
             android:ems="10"
             android:id="@+id/editText_url" android:selectAllOnFocus="false"
-            android:text="https://www.youtube.com/watch?v=OPf0YbXqDm0"/>
+            android:text="https://www.youtube.com/watch?v=EOnSh3QlpbQ"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

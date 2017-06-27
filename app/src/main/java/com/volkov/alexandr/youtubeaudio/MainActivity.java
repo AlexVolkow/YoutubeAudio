@@ -2,9 +2,8 @@ package com.volkov.alexandr.youtubeaudio;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.*;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,16 +13,29 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import com.squareup.picasso.Picasso;
 import com.volkov.alexandr.youtubeaudio.downloader.*;
-import com.volkov.alexandr.youtubeaudio.player.Audio;
+import com.volkov.alexandr.youtubeaudio.music.Audio;
+import com.volkov.alexandr.youtubeaudio.music.MusicControls;
+
 import java.util.ArrayList;
+
+import static com.volkov.alexandr.youtubeaudio.music.MusicService.*;
 
 public class MainActivity extends AppCompatActivity {
     private static final int GET_YOUTUBE_URL = 1;
 
     private Adapter adapter;
+    private MusicControls musicControls;
+
+    private ImageButton play;
+    private ImageView cover;
+    private Drawable pauseImg;
+    private Drawable playImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +46,9 @@ public class MainActivity extends AppCompatActivity {
         listAudio.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         listAudio.setLayoutManager(layoutManager);
-        adapter = new Adapter(this, new ArrayList<Audio>(),
-                (SimpleExoPlayerView) findViewById(R.id.player_view));
+
+        musicControls = new MusicControls(this);
+        adapter = new Adapter(this, new ArrayList<Audio>(), musicControls);
         listAudio.setAdapter(adapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -50,6 +63,51 @@ public class MainActivity extends AppCompatActivity {
                 handleSendText(intent);
             }
         }
+
+        play = (ImageButton) findViewById(R.id.play_button);
+        cover = (ImageView) findViewById(R.id.cover_image);
+
+        final LinearLayout playerLayout = (LinearLayout) findViewById(R.id.player_layout);
+
+        pauseImg = getResources().getDrawable(R.drawable.exo_controls_pause);
+        playImg = getResources().getDrawable(R.drawable.exo_controls_play);
+
+        BroadcastReceiver playerReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null) {
+                    String status = intent.getStringExtra(CMD_STATUS);
+                    if (status != null) {
+                        play.setImageDrawable(musicControls.isPlaying() ? pauseImg : playImg);
+                        if (START_NEW.equals(status)) {
+                            Audio audio = intent.getParcelableExtra(AUDIO);
+                            if (audio != null) {
+                                Picasso.with(MainActivity.this).load(audio.getCoverUrl()).into(cover);
+                            }
+                        }
+                        if (playerLayout.getVisibility() == View.INVISIBLE) {
+                            playerLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        };
+
+        IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
+        registerReceiver(playerReceiver, intFilt);
+    }
+
+    public void rewind(View v) {
+        musicControls.rewind();
+    }
+
+    public void fastforward(View v) {
+        musicControls.fastforward();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     void handleSendText(Intent intent) {
@@ -68,9 +126,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-
             case R.id.action_add:
                 Intent intent = new Intent();
                 intent.setClass(this, YoutubeLinkActivity.class);
@@ -89,6 +144,14 @@ public class MainActivity extends AppCompatActivity {
                 String url = data.getStringExtra("url");
                 addAudio(url);
             }
+        }
+    }
+
+    public void playPauseListener(View v) {
+        if (musicControls.isPlaying()) {
+            musicControls.pause();
+        } else {
+            musicControls.play();
         }
     }
 

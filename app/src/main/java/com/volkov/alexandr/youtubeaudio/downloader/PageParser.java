@@ -2,7 +2,7 @@ package com.volkov.alexandr.youtubeaudio.downloader;
 
 import android.net.Uri;
 import android.util.Log;
-import com.volkov.alexandr.youtubeaudio.player.Audio;
+import com.volkov.alexandr.youtubeaudio.music.Audio;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -20,7 +20,6 @@ public class PageParser {
     private static final String HOST = "http://www.youtubeinmp3.com/fetch/?format=JSON&video=";
     private static final int DELAY = 10;
     private static final int MB = 1048576;
-
 
     private static double getSizeOfFile(URL url) throws FailedDownloadException {
         URLConnection con;

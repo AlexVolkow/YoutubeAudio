@@ -1,11 +1,14 @@
-package com.volkov.alexandr.youtubeaudio.player;
+package com.volkov.alexandr.youtubeaudio.music;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.Date;
 
 /**
  * Created by AlexandrVolkov on 15.06.2017.
  */
-public class Audio{
+public class Audio implements Parcelable{
     private String id;
     private String title;
     private Date date;
@@ -46,6 +49,7 @@ public class Audio{
         return url;
     }
 
+    public String getCoverUrl() { return "https://img.youtube.com/vi/" + id + "/0.jpg"; }
     @Override
     public boolean equals(Object o) {
 
@@ -74,5 +78,47 @@ public class Audio{
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (url != null ? url.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(title);
+        dest.writeSerializable(date);
+        dest.writeLong(length);
+        dest.writeDouble(size);
+        dest.writeString(url);
+    }
+
+    public static final Parcelable.Creator<Audio> CREATOR = new Parcelable.Creator<Audio>() {
+        public Audio createFromParcel(Parcel in) {
+            return new Audio(in);
+        }
+
+        public Audio[] newArray(int size) {
+            return new Audio[size];
+        }
+    };
+
+    private Audio(Parcel parcel) {
+        id = parcel.readString();
+        title = parcel.readString();
+        date = (Date) parcel.readSerializable();
+        length = parcel.readLong();
+        size = parcel.readDouble();
+        url = parcel.readString();
+    }
+
+    @Override
+    public String toString() {
+        return "Audio{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                '}';
     }
 }

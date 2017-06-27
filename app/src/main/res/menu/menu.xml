@@ -6,7 +6,4 @@
             android:icon="@drawable/ic_add"
             android:title="favorite"
             app:showAsAction="always" android:enabled="true" android:checkable="false" android:visible="true"/>
-    <item android:id="@+id/action_settings"
-          android:title="setting"
-          app:showAsAction="never" android:enabled="true" android:checkable="false" android:visible="true"/>
 </menu>

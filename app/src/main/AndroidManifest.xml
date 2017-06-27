@@ -34,6 +34,8 @@
                 android:name=".YoutubeLinkActivity"
                 android:theme="@style/Theme.AppCompat.Light.Dialog.Alert">
         </activity>
+        <service android:name=".music.MusicService"
+                 android:enabled="true"/>
     </application>
 
 </manifest>

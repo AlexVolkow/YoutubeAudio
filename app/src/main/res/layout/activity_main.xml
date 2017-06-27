@@ -8,15 +8,6 @@
         android:layout_height="match_parent"
         tools:context="com.volkov.alexandr.youtubeaudio.MainActivity">
 
-    <ProgressBar
-            android:id="@+id/loading"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" android:visibility="invisible"/>
-
     <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
@@ -25,7 +16,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.volkov.alexandr.youtubeaudio.MainActivity">
+            tools:context="com.volkov.alexandr.youtubeaudio.MainActivity" android:layout_alignParentStart="true">
 
         <android.support.v7.widget.Toolbar
                 android:id="@+id/my_toolbar"
@@ -47,19 +38,37 @@
         <android.support.v7.widget.RecyclerView
                 android:id="@+id/list_audio"
                 android:scrollbars="vertical"
-                android:layout_width="match_parent"
                 android:layout_weight="1"
-                android:layout_height="match_parent"/>
-        <RelativeLayout
-                android:layout_weight="4"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-                    android:id="@+id/player_view"
-                    android:focusable="true"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent" app:use_artwork="false"
-                    android:background="@android:color/darker_gray"/>
-        </RelativeLayout>
+                android:layout_height="match_parent"/>
+
+        <LinearLayout
+                android:id="@+id/player_layout"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:background="@android:color/black" android:layout_height="62dp" android:gravity="bottom"
+                android:visibility="invisible">
+
+            <ImageView
+                    android:layout_height="match_parent" app:srcCompat="@mipmap/ic_launcher" android:id="@+id/cover_image"
+                    android:layout_weight="2" android:layout_width="40dp"/>
+            <ImageButton
+                    android:layout_width="wrap_content"
+                    android:background="@null"
+                    android:layout_height="match_parent" app:srcCompat="@drawable/exo_controls_rewind"
+                    android:id="@+id/rewind_button" android:layout_weight="0.99" android:onClick="rewind"/>
+            <ImageButton
+                    android:id="@+id/play_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" app:srcCompat="@drawable/exo_controls_play"
+                    android:layout_weight="1.00"
+                    android:background="@null"
+                    android:onClick="playPauseListener"/>
+            <ImageButton
+                    android:layout_width="wrap_content"
+                    android:background="@null"
+                    android:layout_height="match_parent" app:srcCompat="@drawable/exo_controls_fastforward"
+                    android:id="@+id/fastforward_button" android:layout_weight="1.01" android:onClick="fastforward"/>
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
