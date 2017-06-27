@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.squareup.picasso.Picasso;
+import com.volkov.alexandr.youtubeaudio.db.DBService;
+import com.volkov.alexandr.youtubeaudio.db.DBServiceImpl;
 import com.volkov.alexandr.youtubeaudio.music.Audio;
 import com.volkov.alexandr.youtubeaudio.downloader.AudioDownloader;
 import com.volkov.alexandr.youtubeaudio.downloader.FailedDownloadException;
@@ -44,6 +47,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
     private static final DecimalFormat decimalFormat = new DecimalFormat("#0.0");
 
     private List<Audio> dataSet;
+    private DBService dbService;
     private Context context;
     private MusicControls musicControls;
 
@@ -68,7 +72,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         }
     }
 
-    public Adapter(Context context, List<Audio> myDataset,final MusicControls musicControls) {
+    public Adapter(Context context, List<Audio> myDataset, final MusicControls musicControls) {
         this.dataSet = myDataset;
         this.context = context;
         this.musicControls = musicControls;
@@ -141,8 +145,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
                 AudioDownloader downloader = new AudioDownloader(dm, audio.getUrl());
                 try {
                     downloader.download(audio.getTitle());
+                    Toast.makeText(context, "Start downloading...", Toast.LENGTH_SHORT).show();
                 } catch (IOException | FailedDownloadException e) {
                     e.printStackTrace();
+                    Toast.makeText(context, "Failed to download file", Toast.LENGTH_SHORT).show();
                 }
             }
         });

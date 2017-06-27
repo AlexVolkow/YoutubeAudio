@@ -9,9 +9,10 @@
 
     <TextView
             android:text="Enter Yotube link"
+            android:layout_centerInParent="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:id="@+id/textView_link" android:textSize="18sp"
-            android:textAlignment="viewStart" android:paddingLeft="10dp"/>
+            android:textAlignment="textStart" android:paddingBottom="0dp" android:paddingLeft="3dp"/>
     <EditText
             android:layout_width="300dp"
             android:layout_height="wrap_content"

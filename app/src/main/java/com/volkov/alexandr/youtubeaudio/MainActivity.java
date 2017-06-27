@@ -18,19 +18,23 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.squareup.picasso.Picasso;
+import com.volkov.alexandr.youtubeaudio.db.DBService;
+import com.volkov.alexandr.youtubeaudio.db.DBServiceImpl;
 import com.volkov.alexandr.youtubeaudio.downloader.*;
 import com.volkov.alexandr.youtubeaudio.music.Audio;
 import com.volkov.alexandr.youtubeaudio.music.MusicControls;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static com.volkov.alexandr.youtubeaudio.music.MusicService.*;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int GET_YOUTUBE_URL = 1;
 
     private Adapter adapter;
     private MusicControls musicControls;
+    private DBService dbService;
 
     private ImageButton play;
     private ImageView cover;
@@ -48,7 +52,12 @@ public class MainActivity extends AppCompatActivity {
         listAudio.setLayoutManager(layoutManager);
 
         musicControls = new MusicControls(this);
-        adapter = new Adapter(this, new ArrayList<Audio>(), musicControls);
+
+        dbService = new DBServiceImpl(this);
+
+        List<Audio> audio = dbService.getAllAudio();
+
+        adapter = new Adapter(this, audio, musicControls);
         listAudio.setAdapter(adapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -160,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             PageParserTask pageParser = new PageParserTask(this);
             pageParser.execute(url);
         } catch (Exception e) {
-            Log.e("FailedDownloading", "Failed to download page on this url " + url);
+            Log.e(LOG_TAG, "Failed to download page on this url " + url);
             showAlert("Failed to download page on this url " + url);
             e.printStackTrace();
         }
@@ -183,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class PageParserTask extends AsyncTask<String, Void, Audio> {
         private ProgressDialog pd;
+        private String url;
 
         public PageParserTask(Context context) {
             pd = new ProgressDialog(context);
@@ -193,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Audio doInBackground(String... params) {
             try {
+                this.url = params[0];
                 return PageParser.getAudio(params[0]);
             } catch (FailedDownloadException e) {
                 e.printStackTrace();
@@ -210,7 +221,20 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Audio audio) {
             super.onPostExecute(audio);
             pd.hide();
-            adapter.addItem(audio);
+            if (audio == null) {
+                Log.e(LOG_TAG, "Failed to download page on this url " + url);
+                showAlert("Failed to download page on this url " + url);
+                return;
+            }
+            if (!dbService.isAlreadyAdded(audio)) {
+                adapter.addItem(audio);
+                long id = dbService.addAudio(audio);
+                Log.d(LOG_TAG, "Video " + audio.getTitle() + " are added with id = " + id);
+                audio.setId(id);
+            } else {
+                Log.i(LOG_TAG, "This video are already added " + audio.getTitle());
+                showAlert("This video are already added " + audio.getTitle());
+            }
         }
     }
 }
