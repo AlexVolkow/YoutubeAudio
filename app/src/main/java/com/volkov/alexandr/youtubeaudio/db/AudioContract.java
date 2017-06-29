@@ -16,6 +16,7 @@ public class AudioContract {
         public static final String COLUMN_LENGTH = "audio_length";
         public static final String COLUMN_SIZE = "size";
         public static final String COLUMN_URL = "url";
+        public static final String COLUMN_TYPE = "type";
     }
 
     public static final String SQL_CREATE_ENTRIES =
@@ -26,6 +27,7 @@ public class AudioContract {
                     AudioEntry.COLUMN_DATE + " INTEGER, " +
                     AudioEntry.COLUMN_LENGTH + " INTEGER, " +
                     AudioEntry.COLUMN_SIZE + " DOUBLE, " +
+                    AudioEntry.COLUMN_TYPE + " TEXT, " +
                     AudioEntry.COLUMN_URL + " TEXT)";
 
     public static final String SQL_DELETE_ENTRIES =

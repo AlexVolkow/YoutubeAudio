@@ -2,6 +2,7 @@ package com.volkov.alexandr.youtubeaudio.music;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -18,10 +19,13 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import static com.volkov.alexandr.youtubeaudio.LogHelper.makeLogTag;
+
 /**
  * Created by AlexandrVolkov on 20.06.2017.
  */
 public class MusicPlayer {
+    public static final String LOG_TAG = makeLogTag(MusicPlayer.class);
     private static final int FIVE_SEC = 5000;
 
     private static DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -72,5 +76,6 @@ public class MusicPlayer {
 
         player.prepare(audioSource);
         player.setPlayWhenReady(true);
+        Log.i(LOG_TAG, "Start stream audio on url " + url);
     }
 }

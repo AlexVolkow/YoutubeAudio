@@ -28,8 +28,6 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".AudioItem">
-        </activity>
         <activity
                 android:name=".YoutubeLinkActivity"
                 android:theme="@style/Theme.AppCompat.Light.Dialog.Alert">

@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.*;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,10 +29,11 @@ import com.volkov.alexandr.youtubeaudio.music.MusicControls;
 
 import java.util.List;
 
+import static com.volkov.alexandr.youtubeaudio.LogHelper.makeLogTag;
 import static com.volkov.alexandr.youtubeaudio.music.MusicService.*;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+    public static final String LOG_TAG = makeLogTag(MainActivity.class);
     private static final int GET_YOUTUBE_URL = 1;
 
     private Adapter adapter;
@@ -55,9 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         dbService = new DBServiceImpl(this);
 
-        List<Audio> audio = dbService.getAllAudio();
-
-        adapter = new Adapter(this, audio, musicControls);
+        adapter = new Adapter(this, dbService, musicControls);
         listAudio.setAdapter(adapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -226,11 +228,16 @@ public class MainActivity extends AppCompatActivity {
                 showAlert("Failed to download page on this url " + url);
                 return;
             }
+
+            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), Uri.parse(audio.getUrl()));
+            int millSecond = mp.getDuration() / 1000; // from milisecond to second
+            mp.release();
+            audio.setLength(millSecond);
+
             if (!dbService.isAlreadyAdded(audio)) {
                 adapter.addItem(audio);
                 long id = dbService.addAudio(audio);
                 Log.d(LOG_TAG, "Video " + audio.getTitle() + " are added with id = " + id);
-                audio.setId(id);
             } else {
                 Log.i(LOG_TAG, "This video are already added " + audio.getTitle());
                 showAlert("This video are already added " + audio.getTitle());

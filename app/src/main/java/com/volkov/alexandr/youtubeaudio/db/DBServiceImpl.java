@@ -31,6 +31,7 @@ public class DBServiceImpl implements DBService {
         values.put(AudioEntry.COLUMN_DATE, audio.getDate().getTime());
         values.put(AudioEntry.COLUMN_LENGTH, audio.getLength());
         values.put(AudioEntry.COLUMN_SIZE, audio.getSize());
+        values.put(AudioEntry.COLUMN_TYPE, audio.getType());
         values.put(AudioEntry.COLUMN_URL, audio.getUrl());
 
         return db.insert(AudioEntry.TABLE_NAME, null, values);
@@ -48,18 +49,18 @@ public class DBServiceImpl implements DBService {
 
         List<Audio> res = new ArrayList<>();
         if (c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex(AudioEntry._ID);
             int hashColIndex = c.getColumnIndex(AudioEntry.COLUMN_HASH);
             int titleColIndex = c.getColumnIndex(AudioEntry.COLUMN_TITLE);
             int dateColIndex = c.getColumnIndex(AudioEntry.COLUMN_DATE);
             int lengthColIndex = c.getColumnIndex(AudioEntry.COLUMN_LENGTH);
             int sizeColIndex = c.getColumnIndex(AudioEntry.COLUMN_SIZE);
+            int typeColIndex = c.getColumnIndex(AudioEntry.COLUMN_TYPE);
             int urlColIndex = c.getColumnIndex(AudioEntry.COLUMN_URL);
 
             do {
                 Date date = new Date(c.getLong(dateColIndex));
-                res.add(new Audio(c.getInt(idColIndex), c.getString(hashColIndex), c.getString(titleColIndex),
-                        date, c.getInt(lengthColIndex), c.getDouble(sizeColIndex),
+                res.add(new Audio(c.getString(hashColIndex), c.getString(titleColIndex),
+                        date, c.getInt(lengthColIndex), c.getDouble(sizeColIndex), c.getString(typeColIndex),
                         c.getString(urlColIndex)));
             } while (c.moveToNext());
         }

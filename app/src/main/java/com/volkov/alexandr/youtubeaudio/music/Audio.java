@@ -9,39 +9,39 @@ import java.util.Date;
  * Created by AlexandrVolkov on 15.06.2017.
  */
 public class Audio implements Parcelable{
-    private long id;
     private String hash;
     private String title;
     private Date date;
-    private long length;
+    private int length;
     private double size;
     private String url;
+    private String type;
 
-    public Audio(long id, String hash, String title, Date date, long length, double size, String url) {
+    public Audio(String hash, String title, Date date, int length, double size, String type, String url) {
         this.hash = hash;
         this.title = title;
         this.date = date;
         this.length = length;
         this.size = size;
         this.url = url;
-        this.id = id;
+        this.type = type;
     }
 
-    public Audio(String hash, String title, Date date, long length, double size, String url) {
+    public Audio(String hash, String title, Date date, double size, String type, String url) {
         this.hash = hash;
         this.title = title;
         this.date = date;
-        this.length = length;
         this.size = size;
         this.url = url;
+        this.type = type;
     }
 
-    public long getId() {
-        return id;
+    public void setLength(int length) {
+        this.length = length;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getType() {
+        return type;
     }
 
     public String getHash() {
@@ -69,9 +69,9 @@ public class Audio implements Parcelable{
     }
 
     public String getCoverUrl() { return "https://img.youtube.com/vi/" + hash + "/0.jpg"; }
+
     @Override
     public boolean equals(Object o) {
-
         if (this == o) return true;
         if (!(o instanceof Audio)) return false;
 
@@ -82,7 +82,8 @@ public class Audio implements Parcelable{
         if (hash != null ? !hash.equals(audio.hash) : audio.hash != null) return false;
         if (title != null ? !title.equals(audio.title) : audio.title != null) return false;
         if (date != null ? !date.equals(audio.date) : audio.date != null) return false;
-        return url != null ? url.equals(audio.url) : audio.url == null;
+        if (url != null ? !url.equals(audio.url) : audio.url != null) return false;
+        return type != null ? type.equals(audio.type) : audio.type == null;
     }
 
     @Override
@@ -92,10 +93,11 @@ public class Audio implements Parcelable{
         result = hash != null ? hash.hashCode() : 0;
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + (int) (length ^ (length >>> 32));
+        result = 31 * result + length;
         temp = Double.doubleToLongBits(size);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (url != null ? url.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;
     }
 
@@ -109,8 +111,9 @@ public class Audio implements Parcelable{
         dest.writeString(hash);
         dest.writeString(title);
         dest.writeSerializable(date);
-        dest.writeLong(length);
+        dest.writeInt(length);
         dest.writeDouble(size);
+        dest.writeString(type);
         dest.writeString(url);
     }
 
@@ -128,8 +131,9 @@ public class Audio implements Parcelable{
         hash = parcel.readString();
         title = parcel.readString();
         date = (Date) parcel.readSerializable();
-        length = parcel.readLong();
+        length = parcel.readInt();
         size = parcel.readDouble();
+        type = parcel.readString();
         url = parcel.readString();
     }
 

@@ -10,7 +10,7 @@ import android.util.Log;
  * Created by AlexandrVolkov on 27.06.2017.
  */
 public class DBHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "YoutubeAudio.db";
 
     public DBHelper(Context context) {

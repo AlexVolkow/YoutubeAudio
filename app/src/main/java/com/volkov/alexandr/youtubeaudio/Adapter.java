@@ -72,8 +72,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         }
     }
 
-    public Adapter(Context context, List<Audio> myDataset, final MusicControls musicControls) {
-        this.dataSet = myDataset;
+    public Adapter(Context context, DBService dbService, final MusicControls musicControls) {
+        this.dataSet = dbService.getAllAudio();
         this.context = context;
         this.musicControls = musicControls;
 
@@ -141,10 +141,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         holder.download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                AudioDownloader downloader = new AudioDownloader(dm, audio.getUrl());
+                AudioDownloader downloader = new AudioDownloader(context, audio.getUrl());
                 try {
-                    downloader.download(audio.getTitle());
+                    downloader.download(audio.getTitle(), audio.getType());
                     Toast.makeText(context, "Start downloading...", Toast.LENGTH_SHORT).show();
                 } catch (IOException | FailedDownloadException e) {
                     e.printStackTrace();
@@ -179,8 +178,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
     }
 
     public void addItem(Audio dataObj) {
-        dataSet.add(dataObj);
-        notifyItemInserted(dataSet.size() - 1);
+        dataSet.add(0, dataObj);
+        notifyItemInserted(0);
     }
 
     public void deleteItem(int index) {

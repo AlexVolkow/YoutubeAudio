@@ -12,14 +12,14 @@
             android:layout_centerInParent="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:id="@+id/textView_link" android:textSize="18sp"
-            android:textAlignment="textStart" android:paddingBottom="0dp" android:paddingLeft="3dp"/>
+            android:textAlignment="textStart" android:paddingBottom="0dp" android:paddingLeft="10dp"/>
     <EditText
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:ems="10"
             android:id="@+id/editText_url" android:selectAllOnFocus="false"
-            android:text="https://www.youtube.com/watch?v=EOnSh3QlpbQ"/>
+            android:text="https://www.youtube.com/watch?v=QUUZ8jhDN1U"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
