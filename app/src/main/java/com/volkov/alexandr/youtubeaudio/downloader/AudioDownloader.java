@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -25,7 +26,7 @@ public class AudioDownloader {
     public static final String LOG_TAG = makeLogTag(AudioDownloader.class);
 
     private static final String DIR = "/youtubeaudio";
-    private static final String BASE_DIR = Environment.getExternalStorageDirectory() + DIR;
+    public static final String BASE_DIR = Environment.getExternalStorageDirectory() + DIR;
     private Uri url;
     private DownloadManager downloadManager;
     private Context context;
@@ -45,6 +46,12 @@ public class AudioDownloader {
     public void download(String fname, String type) throws IOException, FailedDownloadException {
         String filename = fname + "." + type;
 
+        File file = new File(BASE_DIR + "/" + filename);
+        if (file.exists()) {
+            Toast.makeText(context, "This file are already downloaded", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         DownloadManager.Request request = new DownloadManager.Request(url);
         request.setTitle(fname + " download");
         request.setDescription("File is being downloaded...");
@@ -53,6 +60,7 @@ public class AudioDownloader {
         request.setDestinationInExternalPublicDir(DIR, filename);
 
         downloadManager.enqueue(request);
+        Toast.makeText(context, "Start downloading...", Toast.LENGTH_SHORT).show();
         Log.i(LOG_TAG, "File " + fname + " is being downloaded");
     }
 }

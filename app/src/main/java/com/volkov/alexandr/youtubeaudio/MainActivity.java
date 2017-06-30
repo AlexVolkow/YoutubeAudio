@@ -206,7 +206,12 @@ public class MainActivity extends AppCompatActivity {
         protected Audio doInBackground(String... params) {
             try {
                 this.url = params[0];
-                return PageParser.getAudio(params[0]);
+                Audio audio = PageParser.getAudio(params[0]);
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), Uri.parse(audio.getUrl()));
+                int sec = mp.getDuration() / 1000; // from milisecond to second
+                mp.release();
+                audio.setLength(sec);
+                return audio;
             } catch (FailedDownloadException e) {
                 e.printStackTrace();
             }
@@ -228,11 +233,6 @@ public class MainActivity extends AppCompatActivity {
                 showAlert("Failed to download page on this url " + url);
                 return;
             }
-
-            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), Uri.parse(audio.getUrl()));
-            int millSecond = mp.getDuration() / 1000; // from milisecond to second
-            mp.release();
-            audio.setLength(millSecond);
 
             if (!dbService.isAlreadyAdded(audio)) {
                 adapter.addItem(audio);

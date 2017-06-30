@@ -1,10 +1,8 @@
 package com.volkov.alexandr.youtubeaudio;
 
+import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -57,6 +55,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         TextView length;
         TextView size;
         ImageButton download;
+        ImageButton delete;
         ImageButton play;
         ImageView cover;
 
@@ -69,12 +68,14 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
             download = (ImageButton) itemView.findViewById(R.id.button_download);
             play = (ImageButton) itemView.findViewById(R.id.button_play);
             cover = (ImageView) itemView.findViewById(R.id.item_cover);
+            delete = (ImageButton) itemView.findViewById(R.id.button_delete);
         }
     }
 
     public Adapter(Context context, DBService dbService, final MusicControls musicControls) {
         this.dataSet = dbService.getAllAudio();
         this.context = context;
+        this.dbService = dbService;
         this.musicControls = musicControls;
 
         pauseImg = context.getResources().getDrawable(R.drawable.exo_controls_pause);
@@ -131,7 +132,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
         final Audio audio = dataSet.get(position);
 
         holder.title.setText(df.format(audio.getDate()));
-        holder.text.setText(audio.getTitle());
+        String title = audio.getTitle();
+        if (title.length() >= 70) {
+            title = title.substring(0, 70);
+        }
+        holder.text.setText(title);
         Picasso.with(context).load(audio.getCoverUrl()).
                 into(holder.cover);
         String length = String.valueOf((int) (audio.getLength() / 60)) + " min";
@@ -144,7 +149,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
                 AudioDownloader downloader = new AudioDownloader(context, audio.getUrl());
                 try {
                     downloader.download(audio.getTitle(), audio.getType());
-                    Toast.makeText(context, "Start downloading...", Toast.LENGTH_SHORT).show();
                 } catch (IOException | FailedDownloadException e) {
                     e.printStackTrace();
                     Toast.makeText(context, "Failed to download file", Toast.LENGTH_SHORT).show();
@@ -168,6 +172,28 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
                 } else {
                     musicControls.play();
                 }
+            }
+        });
+
+        holder.delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder ad = new AlertDialog.Builder(context);
+                ad.setTitle("Confirmation");
+                ad.setMessage("You want to remove the video?");
+                ad.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dbService.deleteAudio(audio);
+                        deleteItem(holder.getAdapterPosition());
+                    }
+                });
+                ad.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+                ad.setCancelable(true);
+                ad.show();
             }
         });
     }

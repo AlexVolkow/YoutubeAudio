@@ -19,7 +19,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.i("DBHelper", AudioContract.SQL_CREATE_ENTRIES);
         db.execSQL(AudioContract.SQL_CREATE_ENTRIES);
     }
 

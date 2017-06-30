@@ -2,14 +2,17 @@ package com.volkov.alexandr.youtubeaudio.music;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
+import android.util.Log;
+
+import static com.volkov.alexandr.youtubeaudio.LogHelper.makeLogTag;
 
 
 /**
  * Created by AlexandrVolkov on 23.06.2017.
  */
 public class MusicService extends Service {
+    private static final String LOG_TAG = makeLogTag(MusicService.class);
     public static String BROADCAST_ACTION = "com.volkov.alexandr.youtubeaudio.music";
 
     public static final String CMD_NAME = "CMD_NAME";
@@ -18,8 +21,6 @@ public class MusicService extends Service {
     public static final String START_NEW = "START_NEW";
     public static final String CMD_STATUS = "CMD_STATUS";
     public static final String AUDIO = "AUDIO";
-    public static final String AUDIO_COVER = "AUDIO_COVER";
-    public static final String AUDIO_ID = "AUDIO_ID";
     public static final String REWIND = "REWIND";
     public static final String FASTFORWARD = "FASTFORWARD";
 
@@ -29,7 +30,6 @@ public class MusicService extends Service {
     public void onCreate() {
         super.onCreate();
         player = new MusicPlayer(getApplicationContext());
-        IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
     }
 
     @Override
@@ -39,10 +39,13 @@ public class MusicService extends Service {
             Intent broadcast = new Intent(BROADCAST_ACTION);
             if (START_NEW.equals(cmd)) {
                 Audio audio = intent.getParcelableExtra(AUDIO);
-                player.playFromURL(audio.getUrl());
-
-                broadcast.putExtra(CMD_STATUS, START_NEW);
-                broadcast.putExtra(AUDIO, audio);
+                try {
+                    player.playSong(audio);
+                    broadcast.putExtra(CMD_STATUS, START_NEW);
+                    broadcast.putExtra(AUDIO, audio);
+                }catch (IllegalStateException e){
+                    Log.e(LOG_TAG, "No internet connection for stream audio from " + audio.getUrl());
+                }
             }
             if (PLAY.equals(cmd)) {
                 player.play();

@@ -8,18 +8,16 @@
         android:layout_height="wrap_content">
 
     <TextView
-            android:text="Enter Yotube link"
-            android:layout_centerInParent="true"
+            android:text="@string/enter_youtube_link"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" android:id="@+id/textView_link" android:textSize="18sp"
             android:textAlignment="textStart" android:paddingBottom="0dp" android:paddingLeft="10dp"/>
     <EditText
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
+            android:inputType="textUri"
             android:ems="10"
-            android:id="@+id/editText_url" android:selectAllOnFocus="false"
-            android:text="https://www.youtube.com/watch?v=QUUZ8jhDN1U"/>
+            android:id="@+id/editText_url" android:selectAllOnFocus="false"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -31,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 style="?android:attr/buttonBarButtonStyle"
-                android:text="Cancel"
+                android:text="@string/cancel"
                 android:layout_gravity="left"
                 android:textColor="#00b0e4" android:id="@+id/button_cancel" android:onClick="close"/>
 
@@ -40,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 style="?android:attr/buttonBarButtonStyle"
-                android:text="Add"
+                android:text="@string/add"
                 android:layout_gravity="right"
                 android:textColor="#00b0e4" android:id="@+id/button_add" android:onClick="add"/>
     </LinearLayout>
