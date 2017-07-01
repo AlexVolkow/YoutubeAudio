@@ -71,8 +71,13 @@ public class Audio implements Parcelable{
     public String getCoverUrl() { return "https://img.youtube.com/vi/" + hash + "/0.jpg"; }
 
     public String getFileName() {
-        return title + "." + type;
+        String currTitle = title;
+        if (title.length() > 30) {
+            currTitle = title.substring(0, 30);
+        }
+        return currTitle + "." + type;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

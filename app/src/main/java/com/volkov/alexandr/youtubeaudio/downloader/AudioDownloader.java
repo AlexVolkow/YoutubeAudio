@@ -43,9 +43,7 @@ public class AudioDownloader {
         }
     }
 
-    public void download(String fname, String type) throws IOException, FailedDownloadException {
-        String filename = fname + "." + type;
-
+    public void download(String filename) throws IOException, FailedDownloadException {
         File file = new File(BASE_DIR + "/" + filename);
         if (file.exists()) {
             Toast.makeText(context, "This file are already downloaded", Toast.LENGTH_SHORT).show();
@@ -53,7 +51,7 @@ public class AudioDownloader {
         }
 
         DownloadManager.Request request = new DownloadManager.Request(url);
-        request.setTitle(fname + " download");
+        request.setTitle(filename + " download");
         request.setDescription("File is being downloaded...");
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
@@ -61,6 +59,6 @@ public class AudioDownloader {
 
         downloadManager.enqueue(request);
         Toast.makeText(context, "Start downloading...", Toast.LENGTH_SHORT).show();
-        Log.i(LOG_TAG, "File " + fname + " is being downloaded");
+        Log.i(LOG_TAG, "File " + filename + " is being downloaded");
     }
 }

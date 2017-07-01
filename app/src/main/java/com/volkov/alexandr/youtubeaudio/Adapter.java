@@ -148,7 +148,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Holder> {
             public void onClick(View v) {
                 AudioDownloader downloader = new AudioDownloader(context, audio.getUrl());
                 try {
-                    downloader.download(audio.getTitle(), audio.getType());
+                    downloader.download(audio.getFileName());
                 } catch (IOException | FailedDownloadException e) {
                     e.printStackTrace();
                     Toast.makeText(context, "Failed to download file", Toast.LENGTH_SHORT).show();
