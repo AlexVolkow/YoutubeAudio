@@ -48,7 +48,7 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:background="@android:color/black" android:layout_height="62dp" android:gravity="bottom"
-                android:visibility="invisible">
+                android:visibility="gone">
 
             <ImageView
                     android:layout_height="match_parent" app:srcCompat="@drawable/ic_arrow" android:id="@+id/cover_image"

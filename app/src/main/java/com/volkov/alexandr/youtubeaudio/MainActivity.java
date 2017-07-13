@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                                 Picasso.with(MainActivity.this).load(audio.getCoverUrl()).into(cover);
                             }
                         }
-                        if (playerLayout.getVisibility() == View.INVISIBLE) {
+                        if (playerLayout.getVisibility() == View.GONE) {
                             playerLayout.setVisibility(View.VISIBLE);
                         }
                     }
