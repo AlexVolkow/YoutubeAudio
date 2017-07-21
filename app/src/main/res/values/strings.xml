@@ -4,4 +4,7 @@
     <string name="cancel">Cancel</string>
     <string name="add">Add</string>
     <string name="add_new_video">Add new video</string>
+    <string name="download_audio">Download audio</string>
+    <string name="_10_min">10 min</string>
+    <string name="_15_mb">15 mb</string>
 </resources>

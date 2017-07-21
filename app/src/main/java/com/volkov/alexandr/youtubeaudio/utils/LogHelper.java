@@ -1,10 +1,10 @@
-package com.volkov.alexandr.youtubeaudio;
+package com.volkov.alexandr.youtubeaudio.utils;
 
 /**
- * Created by AlexandrVolkov on 28.06.2017.
+ * Created by AlexandrVolkov on 07.07.2017.
  */
 public class LogHelper {
-    private static final String LOG_PREFIX = "youa_";
+    private static final String LOG_PREFIX = "yoau_";
     private static final int LOG_PREFIX_LENGTH = LOG_PREFIX.length();
     private static final int MAX_LOG_TAG_LENGTH = 23;
 

@@ -1,6 +1,7 @@
 package com.volkov.alexandr.youtubeaudio.db;
 
-import com.volkov.alexandr.youtubeaudio.music.Audio;
+import com.volkov.alexandr.youtubeaudio.model.Audio;
+import com.volkov.alexandr.youtubeaudio.model.AudioLink;
 
 import java.util.List;
 
@@ -10,9 +11,15 @@ import java.util.List;
 public interface DBService {
     long addAudio(Audio audio);
 
-    List<Audio> getAllAudio();
-
     void deleteAudio(Audio audio);
 
-    boolean isAlreadyAdded(Audio audio);
+    Audio getAudioById(long id);
+
+    long addLink(AudioLink audioLink);
+
+    List<AudioLink> getAllLink();
+
+    void deleteLink(AudioLink audioLink);
+
+    boolean isAlreadyAdded(AudioLink audioLink);
 }

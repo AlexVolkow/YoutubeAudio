@@ -17,7 +17,7 @@
             android:launchMode="standard"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -29,11 +29,9 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".YoutubeLinkActivity"
+                android:name=".ui.AddLinkActivity"
                 android:theme="@style/Theme.AppCompat.Light.Dialog.Alert">
         </activity>
-        <service android:name=".music.MusicService"
-                 android:enabled="true"/>
     </application>
 
 </manifest>

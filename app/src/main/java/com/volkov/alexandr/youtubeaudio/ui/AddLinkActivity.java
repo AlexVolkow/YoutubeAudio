@@ -1,12 +1,13 @@
-package com.volkov.alexandr.youtubeaudio;
+package com.volkov.alexandr.youtubeaudio.ui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import com.volkov.alexandr.youtubeaudio.R;
 
-public class YoutubeLinkActivity extends AppCompatActivity {
+public class AddLinkActivity extends AppCompatActivity {
     private EditText editURL;
 
     public void add(View v) {
