@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
+import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.MAX_PATH;
+
 /**
  * Created by AlexandrVolkov on 15.06.2017.
  */
@@ -26,6 +28,12 @@ public class AudioLink implements Parcelable{
         title = in.readString();
         duration = in.readInt();
         audio = in.readParcelable(Audio.class.getClassLoader());
+    }
+
+    public String getFileName() {
+        String type = audio.getType();
+        String name = title.substring(0, Math.min(title.length(), MAX_PATH - type.length() - 1));
+        return name + "." + type;
     }
 
     public String getHash() {

@@ -1,6 +1,9 @@
 package com.volkov.alexandr.youtubeaudio.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,11 +22,13 @@ import com.volkov.alexandr.youtubeaudio.db.DBServiceImpl;
 import com.volkov.alexandr.youtubeaudio.model.AudioLink;
 import com.volkov.alexandr.youtubeaudio.network.NetworkService;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
+import static com.volkov.alexandr.youtubeaudio.network.downloader.AudioDownloader.FULL_PATH;
 import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.fromByteToMb;
 import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 
@@ -42,18 +47,20 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
     private Context context;
     private NetworkService networkService;
 
+    private Drawable icPlay;
 
     public AudioAdapter(Context context) {
         this.dbService = new DBServiceImpl(context);
         this.dataSet = dbService.getAllLink();
         this.context = context;
         this.networkService = new NetworkService(context);
+        this.icPlay = context.getDrawable(R.drawable.ic_play_arrow_black_24dp);
     }
 
     private AlertDialog createDialog(int pos) {
         AudioLink link = dataSet.get(pos);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setItems(new String[]{"delete"},
+        builder.setItems(new String[]{"remove"},
                 (dialog, which) -> {
                     dbService.deleteLink(link);
                     dbService.deleteAudio(link.getAudio());
@@ -93,7 +100,37 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
         String size = DECIMAL_FORMAT.format(value) + " mb";
         holder.size.setText(size);
 
-        holder.download.setOnClickListener((View v) -> networkService.download(audioLink));
+        if (networkService.isDownloaded(audioLink)) {
+            setOpenAction(holder, audioLink);
+        } else {
+            setDownloadAction(holder, audioLink);
+        }
+    }
+
+    private void setOpenAction(Holder holder, AudioLink audioLink) {
+        holder.ivAction.setBackground(icPlay);
+        holder.download.setText(context.getString(R.string.open_file));
+        holder.download.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(getFullPath(audioLink)), "audio/*");
+            context.startActivity(intent);
+        });
+    }
+
+    private void setDownloadAction(Holder holder, AudioLink audioLink) {
+        holder.download.setOnClickListener((View v) -> {
+            holder.download.setEnabled(false);
+            networkService.download(audioLink,
+                    () -> {
+                        holder.download.setEnabled(true);
+                        setOpenAction(holder, audioLink);
+                    });
+        });
+    }
+
+    private String getFullPath(AudioLink audioLink) {
+        return FULL_PATH + "/" + audioLink.getFileName();
     }
 
     public void addItem(AudioLink dataObj, int index) {
@@ -129,6 +166,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
         ImageView cover;
         @BindView(R.id.tv_size)
         TextView size;
+        @BindView(R.id.iv_action)
+        ImageView ivAction;
 
         public Holder(View itemView) {
             super(itemView);

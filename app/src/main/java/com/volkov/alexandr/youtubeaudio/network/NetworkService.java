@@ -1,7 +1,10 @@
 package com.volkov.alexandr.youtubeaudio.network;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.media.MediaPlayer;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -18,9 +21,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutionException;
 
-import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.MAX_PATH;
-import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.fromByteToMb;
-import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.showAlert;
+import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.*;
 import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 
 
@@ -30,8 +31,8 @@ import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 public class NetworkService {
     private static final String LOG_TAG = makeLogTag(NetworkService.class);
 
-    public static final String YOUTUBE_API_KEY = "AIzaSyAo8DD2w2qrEw2Pkm7pYB7Mhd-N5yAiCvU";
-    public static final int DELAY = 5;
+    private static final String YOUTUBE_API_KEY = "AIzaSyAo8DD2w2qrEw2Pkm7pYB7Mhd-N5yAiCvU";
+    private static final int DELAY = 5;
 
     private Context context;
     private AudioDownloader audioDownloader;
@@ -76,21 +77,18 @@ public class NetworkService {
         return new DurationTask().execute(hash).get();
     }
 
-    public void download(AudioLink audioLink) {
-        String fileName = getFileName(audioLink);
+    public void download(AudioLink audioLink, AudioDownloader.DownloadListener listener) {
+        String fileName = audioLink.getFileName();
         Uri url = Uri.parse(audioLink.getAudio().getUrl());
         try {
-            audioDownloader.download(url, fileName);
+            audioDownloader.download(url, fileName, listener);
         } catch (IOException e) {
             Log.e(LOG_TAG, Log.getStackTraceString(e));
         }
     }
 
-    private static String getFileName(AudioLink audioLink) {
-        String title = audioLink.getTitle();
-        String type = audioLink.getAudio().getType();
-        title = title.substring(0, Math.min(title.length(), MAX_PATH - type.length() - 1));
-        return title + "." + type;
+    public boolean isDownloaded(AudioLink audioLink) {
+        return audioDownloader.isDownloaded(audioLink.getFileName());
     }
 
     private static String parseHash(String url) {
