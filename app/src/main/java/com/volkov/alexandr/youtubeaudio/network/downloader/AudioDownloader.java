@@ -20,7 +20,7 @@ public class AudioDownloader {
     private static final String LOG_TAG = makeLogTag(AudioDownloader.class);
 
     private static final String DIR = "/youtubeaudio";
-    private static final String FULL_PATH = Environment.getExternalStorageDirectory() + DIR;
+    public static final String FULL_PATH = Environment.getExternalStorageDirectory() + DIR;
 
     private static DownloadManager downloadManager;
     private Context context;

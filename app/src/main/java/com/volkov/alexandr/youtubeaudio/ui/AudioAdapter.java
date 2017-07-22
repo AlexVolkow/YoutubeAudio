@@ -1,12 +1,15 @@
 package com.volkov.alexandr.youtubeaudio.ui;
 
-import android.app.DownloadManager;
-import android.content.*;
+import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.squareup.picasso.Picasso;
@@ -18,11 +21,11 @@ import com.volkov.alexandr.youtubeaudio.network.NetworkService;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.fromByteToMb;
+import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 
 
 /**
@@ -31,7 +34,8 @@ import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.fromByteToMb;
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.ENGLISH);
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0.0");
-    public static final int TITLE_LENGTH = 70;
+    private static final int TITLE_LENGTH = 70;
+    private static final String LOG_TOG = makeLogTag(AudioAdapter.class);
 
     private List<AudioLink> dataSet;
     private DBService dbService;
@@ -44,6 +48,20 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
         this.dataSet = dbService.getAllLink();
         this.context = context;
         this.networkService = new NetworkService(context);
+    }
+
+    private AlertDialog createDialog(int pos) {
+        AudioLink link = dataSet.get(pos);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setItems(new String[]{"delete"},
+                (dialog, which) -> {
+                    dbService.deleteLink(link);
+                    dbService.deleteAudio(link.getAudio());
+                    deleteItem(pos);
+                    Log.i(LOG_TOG, "Deleted audio " + link.getTitle());
+                });
+        builder.setCancelable(true);
+        return builder.create();
     }
 
     @Override
@@ -62,7 +80,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
         holder.title.setText(DATE_FORMAT.format(audioLink.getDate()));
 
         String title = audioLink.getTitle();
-        title = title.substring(0, Math.min(title.length(),TITLE_LENGTH));
+        title = title.substring(0, Math.min(title.length(), TITLE_LENGTH));
         holder.text.setText(title);
 
         Picasso.with(context).load(audioLink.getCoverUrl()).
@@ -72,7 +90,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
         holder.duration.setText(duration);
 
         double value = fromByteToMb(audioLink.getAudio().getSize());
-        String size = DECIMAL_FORMAT.format(value)+ " mb";
+        String size = DECIMAL_FORMAT.format(value) + " mb";
         holder.size.setText(size);
 
         holder.download.setOnClickListener((View v) -> networkService.download(audioLink));
@@ -84,7 +102,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
     }
 
     public void addItem(AudioLink dataObj) {
-        addItem(dataObj,0);
+        addItem(dataObj, 0);
     }
 
     public void deleteItem(int index) {
@@ -97,7 +115,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
         return dataSet.size();
     }
 
-    public static class Holder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+
+    public class Holder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         @BindView(R.id.tv_title)
         TextView title;
         @BindView(R.id.tv_text)
@@ -120,7 +139,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
         @Override
         public boolean onLongClick(View v) {
             int pos = getAdapterPosition();
-            Toast.makeText(v.getContext(), String.valueOf(pos),Toast.LENGTH_SHORT).show();
+            AlertDialog dialog = createDialog(pos);
+            dialog.show();
             return true;
         }
     }

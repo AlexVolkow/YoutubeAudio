@@ -2,7 +2,7 @@ package com.volkov.alexandr.youtubeaudio.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,8 +18,10 @@ import com.volkov.alexandr.youtubeaudio.R;
 import com.volkov.alexandr.youtubeaudio.db.DBService;
 import com.volkov.alexandr.youtubeaudio.db.DBServiceImpl;
 import com.volkov.alexandr.youtubeaudio.model.AudioLink;
-import com.volkov.alexandr.youtubeaudio.network.*;
+import com.volkov.alexandr.youtubeaudio.network.NetworkService;
+import com.volkov.alexandr.youtubeaudio.network.ResponseListener;
 
+import static com.volkov.alexandr.youtubeaudio.network.downloader.AudioDownloader.FULL_PATH;
 import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.showAlert;
 import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 
@@ -103,6 +105,13 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void openFolder() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse(FULL_PATH);
+        intent.setDataAndType(uri, "resource/folder");
+        startActivity(Intent.createChooser(intent, "Open folder"));
     }
 
     @Override
