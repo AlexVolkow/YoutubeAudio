@@ -20,15 +20,15 @@ import com.volkov.alexandr.youtubeaudio.R;
 import com.volkov.alexandr.youtubeaudio.db.DBService;
 import com.volkov.alexandr.youtubeaudio.db.DBServiceImpl;
 import com.volkov.alexandr.youtubeaudio.model.AudioLink;
+import com.volkov.alexandr.youtubeaudio.model.AudioManager;
 import com.volkov.alexandr.youtubeaudio.network.NetworkService;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
-import static com.volkov.alexandr.youtubeaudio.network.downloader.AudioDownloader.FULL_PATH;
+import static com.volkov.alexandr.youtubeaudio.network.NetworkService.getFullPath;
 import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.fromByteToMb;
 import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 
@@ -46,26 +46,41 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
     private DBService dbService;
     private Context context;
     private NetworkService networkService;
+    private AudioManager manager;
 
     private Drawable icPlay;
+    private Drawable icDownload;
 
-    public AudioAdapter(Context context) {
+    public AudioAdapter(Context context, AudioManager manager) {
         this.dbService = new DBServiceImpl(context);
         this.dataSet = dbService.getAllLink();
         this.context = context;
+        this.manager = manager;
         this.networkService = new NetworkService(context);
         this.icPlay = context.getDrawable(R.drawable.ic_play_arrow_black_24dp);
+        this.icDownload = context.getDrawable(R.drawable.ic_file_download_black_24dp);
     }
 
     private AlertDialog createDialog(int pos) {
         AudioLink link = dataSet.get(pos);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setItems(new String[]{"remove"},
+        String[] items = new String[]{"remove", "reload"};
+        builder.setItems(items,
                 (dialog, which) -> {
-                    dbService.deleteLink(link);
-                    dbService.deleteAudio(link.getAudio());
+                    switch (which) {
+                        case 0: {
+                            manager.deleteAudio(link);
+                            Log.i(LOG_TOG, "Deleted audio " + link.getTitle());
+                        }
+                        break;
+                        case 1: {
+                            manager.deleteAudio(link);
+                            manager.addAudio(link.getVideoUrl());
+                            Log.i(LOG_TOG, "Reload audio " + link.getTitle());
+                        }
+                        break;
+                    }
                     deleteItem(pos);
-                    Log.i(LOG_TOG, "Deleted audio " + link.getTitle());
                 });
         builder.setCancelable(true);
         return builder.create();
@@ -108,8 +123,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
     }
 
     private void setOpenAction(Holder holder, AudioLink audioLink) {
-        holder.ivAction.setBackground(icPlay);
         holder.download.setText(context.getString(R.string.open_file));
+        holder.ivAction.setBackground(icPlay);
         holder.download.setOnClickListener(v -> {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
@@ -119,6 +134,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
     }
 
     private void setDownloadAction(Holder holder, AudioLink audioLink) {
+        holder.download.setText(context.getString(R.string.download_audio));
+        holder.ivAction.setBackground(icDownload);
         holder.download.setOnClickListener((View v) -> {
             holder.download.setEnabled(false);
             networkService.download(audioLink,
@@ -127,10 +144,6 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.Holder> {
                         setOpenAction(holder, audioLink);
                     });
         });
-    }
-
-    private String getFullPath(AudioLink audioLink) {
-        return FULL_PATH + "/" + audioLink.getFileName();
     }
 
     public void addItem(AudioLink dataObj, int index) {

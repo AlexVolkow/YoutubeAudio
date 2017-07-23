@@ -1,21 +1,16 @@
 package com.volkov.alexandr.youtubeaudio.network.parser;
 
-import com.volkov.alexandr.youtubeaudio.model.AudioLink;
 import okhttp3.ResponseBody;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.threeten.bp.Duration;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
-
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Date;
 
 /**
  * Created by AlexandrVolkov on 20.07.2017.

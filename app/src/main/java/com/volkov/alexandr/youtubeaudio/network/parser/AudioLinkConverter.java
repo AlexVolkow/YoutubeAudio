@@ -46,12 +46,12 @@ public class AudioLinkConverter extends Converter.Factory {
             try {
                 res = parse(value.string());
             } catch (JSONException e) {
-                Log.e(LOG_TAG,Log.getStackTraceString(e));
+                Log.e(LOG_TAG, Log.getStackTraceString(e));
             }
             return res;
         }
 
-        private AudioLink parse(String page) throws JSONException{
+        private AudioLink parse(String page) throws JSONException {
             JSONObject jsonObject = new JSONObject(page);
             String title = jsonObject.getString("title");
 
@@ -90,7 +90,7 @@ public class AudioLinkConverter extends Converter.Factory {
                 files = audios;
             }
 
-            Collections.sort(files, (o1,o2) -> o1.getBitrate() - o2.getBitrate());
+            Collections.sort(files, (o1, o2) -> o1.getBitrate() - o2.getBitrate());
             return files.get(files.size() / 2);
         }
 

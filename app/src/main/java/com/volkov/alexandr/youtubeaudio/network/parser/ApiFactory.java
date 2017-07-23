@@ -11,7 +11,7 @@ public class ApiFactory {
     private static final String DURATION_BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     private static volatile ParseService sParse;
-    private static volatile  DurationService sDuration;
+    private static volatile DurationService sDuration;
 
     private ApiFactory() {
     }

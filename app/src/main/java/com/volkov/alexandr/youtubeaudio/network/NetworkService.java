@@ -1,10 +1,6 @@
 package com.volkov.alexandr.youtubeaudio.network;
 
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -21,7 +17,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutionException;
 
-import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.*;
+import static com.volkov.alexandr.youtubeaudio.network.downloader.AudioDownloader.FULL_PATH;
+import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.fromByteToMb;
+import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.showAlert;
 import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 
 
@@ -125,6 +123,10 @@ public class NetworkService {
             }
             return 0L;
         }
+    }
+
+    public static String getFullPath(AudioLink audioLink) {
+        return FULL_PATH + "/" + audioLink.getFileName();
     }
 
     private class DurationTask extends AsyncTask<String, Void, Long> {

@@ -49,14 +49,12 @@
                 <ImageView
                         android:id="@+id/iv_action"
                         style="@style/Widget.AppCompat.Button.Borderless"
-                        android:background="@android:drawable/stat_sys_download"
+                        android:background="@drawable/ic_file_download_black_24dp"
                         android:backgroundTint="@android:color/darker_gray"
                         android:foregroundGravity="right"
-                        android:layout_width="30dp"
-                        android:layout_height="25dp"
                         android:layout_centerVertical="true"
                         android:layout_toStartOf="@+id/btn_download"
-                        android:clickable="false"/>
+                        android:clickable="false" android:layout_width="24dp" android:layout_height="24dp"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -72,7 +70,8 @@
                         android:id="@+id/btn_download"
                         android:gravity="center"
                         android:textColor="?android:attr/textColorTertiary"
-                        android:layout_centerHorizontal="true" android:layout_centerInParent="false"/>
+                        android:layout_centerHorizontal="true" android:layout_centerInParent="false"
+                        android:textStyle="normal|bold"/>
                 <TextView
                         android:text="@string/_15_mb"
                         android:layout_width="wrap_content"

@@ -2,7 +2,6 @@ package com.volkov.alexandr.youtubeaudio.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,14 +17,17 @@ import com.volkov.alexandr.youtubeaudio.R;
 import com.volkov.alexandr.youtubeaudio.db.DBService;
 import com.volkov.alexandr.youtubeaudio.db.DBServiceImpl;
 import com.volkov.alexandr.youtubeaudio.model.AudioLink;
+import com.volkov.alexandr.youtubeaudio.model.AudioManager;
 import com.volkov.alexandr.youtubeaudio.network.NetworkService;
 import com.volkov.alexandr.youtubeaudio.network.ResponseListener;
 
-import static com.volkov.alexandr.youtubeaudio.network.downloader.AudioDownloader.FULL_PATH;
+import java.io.File;
+
+import static com.volkov.alexandr.youtubeaudio.network.NetworkService.getFullPath;
 import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.showAlert;
 import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AudioManager {
     private static final String LOG_TAG = makeLogTag(MainActivity.class);
 
     private static final int GET_YOUTUBE_URL = 1;
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         listAudio.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         listAudio.setLayoutManager(layoutManager);
-        adapter = new AudioAdapter(this);
+        adapter = new AudioAdapter(this, this);
         listAudio.setAdapter(adapter);
     }
 
@@ -107,13 +109,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void openFolder() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse(FULL_PATH);
-        intent.setDataAndType(uri, "resource/folder");
-        startActivity(Intent.createChooser(intent, "Open folder"));
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GET_YOUTUBE_URL) {
@@ -124,8 +119,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    private void addAudio(String url) {
+    @Override
+    public void addAudio(String url) {
         if (!pd.isShowing()) {
             pd.show();
         }
@@ -152,6 +147,17 @@ public class MainActivity extends AppCompatActivity {
                 showAlert(MainActivity.this, "Failed to download page on this url " + url);
             }
         });
+    }
+
+    @Override
+    public void deleteAudio(AudioLink link) {
+        dbService.deleteLink(link);
+        dbService.deleteAudio(link.getAudio());
+        File audio = new File(getFullPath(link));
+        if (audio.exists()) {
+            audio.delete();
+            Log.i(LOG_TAG, "Deleted file " + link.getFileName());
+        }
     }
 
     private ProgressDialog createProgressDialog() {

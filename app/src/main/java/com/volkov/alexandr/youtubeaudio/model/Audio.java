@@ -8,7 +8,7 @@ import android.os.Parcelable;
  * Created by AlexandrVolkov on 17.07.2017.
  */
 
-public class Audio implements Parcelable{
+public class Audio implements Parcelable {
     private String url;
     private long size;
     private int bitrate;
@@ -58,23 +58,24 @@ public class Audio implements Parcelable{
             return this;
         }
 
-       public Builder setSize(long size) {
+        public Builder setSize(long size) {
             Audio.this.size = size;
             return this;
-       }
+        }
 
-       public Builder setType(String type) {
+        public Builder setType(String type) {
             Audio.this.type = type;
             return this;
-       }
-       public Builder setBitrate(int bitrate) {
+        }
+
+        public Builder setBitrate(int bitrate) {
             Audio.this.bitrate = bitrate;
             return this;
-       }
+        }
 
-       public Audio build() {
+        public Audio build() {
             return Audio.this;
-       }
+        }
     }
 
     @Override

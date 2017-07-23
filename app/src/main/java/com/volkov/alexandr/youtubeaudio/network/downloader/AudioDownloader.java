@@ -9,12 +9,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.util.LongSparseArray;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.volkov.alexandr.youtubeaudio.utils.LogHelper.makeLogTag;
 
@@ -30,7 +29,7 @@ public class AudioDownloader {
 
     private static DownloadManager downloadManager;
     private Context context;
-    private static Map<Long, DownloadListener> listeners = new HashMap<>();
+    private static LongSparseArray<DownloadListener> listeners = new LongSparseArray<>();
 
     public AudioDownloader(Context context) {
         this.context = context;
@@ -80,7 +79,7 @@ public class AudioDownloader {
         File file = new File(FULL_PATH + "/" + filename);
         return file.exists();
     }
-    
+
     public void download(Uri url, String filename, DownloadListener listener) throws IOException {
         if (isDownloaded(filename)) {
             Toast.makeText(context, filename + " are already downloaded", Toast.LENGTH_SHORT).show();

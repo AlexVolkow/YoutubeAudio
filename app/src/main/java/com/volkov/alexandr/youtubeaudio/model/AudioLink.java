@@ -10,7 +10,8 @@ import static com.volkov.alexandr.youtubeaudio.utils.AndroidHelper.MAX_PATH;
 /**
  * Created by AlexandrVolkov on 15.06.2017.
  */
-public class AudioLink implements Parcelable{
+public class AudioLink implements Parcelable {
+    private static final String VIDEO_URL = "https://www.youtube.com/watch?v=%s";
     private static final String COVER_URL = "https://img.youtube.com/vi/%s/0.jpg";
 
     private String hash;
@@ -34,6 +35,10 @@ public class AudioLink implements Parcelable{
         String type = audio.getType();
         String name = title.substring(0, Math.min(title.length(), MAX_PATH - type.length() - 1));
         return name + "." + type;
+    }
+
+    public String getVideoUrl() {
+        return String.format(VIDEO_URL, hash);
     }
 
     public String getHash() {
@@ -64,7 +69,9 @@ public class AudioLink implements Parcelable{
         this.hash = hash;
     }
 
-    public String getCoverUrl() { return String.format(COVER_URL, hash); }
+    public String getCoverUrl() {
+        return String.format(COVER_URL, hash);
+    }
 
     public static Builder newBuilder() {
         return new AudioLink().new Builder();
