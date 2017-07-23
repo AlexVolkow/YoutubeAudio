@@ -1,14 +1,20 @@
 # YoutubeAudio
 Youtube audio downloader
 
+# APK
+[YoutubeAudio.apk](https://yadi.sk/d/_s94J8N03LJmXD)
+
 # Features
 - Downloading audio from video
-- Stream audio from video
 - Receiving data from other apps
 
 # Screenshots
-- List of audio
-<img height="640" width="360" src="https://github.com/AlexVolkow/YoutubeAudio/blob/master/screenshots/2.jpg"/>
-- Receiving data
-<img height="640" width="360" src="https://github.com/AlexVolkow/YoutubeAudio/blob/master/screenshots/1.jpg"/>
+<img height="366" width="206"  src="https://github.com/AlexVolkow/YoutubeAudio/blob/master/screenshots/2.jpg"/>
+<img height="366" width="206"  src="https://github.com/AlexVolkow/YoutubeAudio/blob/master/screenshots/1.jpg"/>
 
+# Library's
+- ButterKnife
+- Retrofit2
+- Retrolambda
+- Picasso
+- ThreeTenABP
