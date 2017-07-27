@@ -1,8 +1,11 @@
 package com.volkov.alexandr.youtubeaudio.ui;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +23,7 @@ import com.volkov.alexandr.youtubeaudio.model.AudioLink;
 import com.volkov.alexandr.youtubeaudio.model.AudioManager;
 import com.volkov.alexandr.youtubeaudio.network.NetworkService;
 import com.volkov.alexandr.youtubeaudio.network.ResponseListener;
+import com.volkov.alexandr.youtubeaudio.utils.AndroidHelper;
 
 import java.io.File;
 
@@ -56,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements AudioManager {
         setSupportActionBar(toolbar);
         initRecyclerView();
 
+        checkPermissions();
+
         Intent intent = getIntent();
         if (intent != null) {
             String action = intent.getAction();
@@ -66,6 +72,15 @@ public class MainActivity extends AppCompatActivity implements AudioManager {
                     handleSendText(intent);
                 }
             }
+        }
+    }
+
+    private void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            AndroidHelper.requestMultiplePermissions(this);
         }
     }
 

@@ -1,8 +1,11 @@
 package com.volkov.alexandr.youtubeaudio.utils;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 
 /**
@@ -11,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 public class AndroidHelper {
     public static final int MAX_PATH = 60;
     private static final int MB = 1048576;
+    private static final int PERMISSION_REQUEST_CODE = 5;
 
     public static double fromByteToMb(long value) {
         return (double) value / MB;
@@ -42,5 +46,14 @@ public class AndroidHelper {
             return true;
         }
         return false;
+    }
+
+    public static void requestMultiplePermissions(Activity activity) {
+        ActivityCompat.requestPermissions(activity,
+                new String[] {
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                },
+                PERMISSION_REQUEST_CODE);
     }
 }
